@@ -1,0 +1,220 @@
+package P2;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTextPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
+import java.awt.CardLayout;
+import javax.swing.JLabel;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.Socket;
+import java.util.Arrays;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import javax.swing.JTextArea;
+import javax.swing.JButton;
+
+public class picture extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField IP_start;
+	private JTextField port_start;
+	private JTextField multi_number;
+	private JTextField IP_end;
+	private JTextField port_end;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					picture frame = new picture();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public picture() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setBounds(100, 100, 450, 500);
+		contentPane = new JPanel();
+		contentPane.setBounds(20, 1000, 1000, 1000);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		//contentPane.setLayout(null);
+		
+		//画布
+		JPanel panel_IP = new JPanel();
+		panel_IP.setBounds(20, 20, 400, 40);
+		contentPane.add(panel_IP);
+		panel_IP.setLayout(null);
+		
+		JLabel IPLabel = new JLabel("\u8F93\u5165IP");
+		IPLabel.setBounds(5, 8, 46, 18);
+		panel_IP.add(IPLabel);
+		
+		IP_start = new JTextField();
+		IP_start.setBounds(85, 5, 86, 24);
+		panel_IP.add(IP_start);
+		IP_start.setColumns(10);
+		
+		IP_end = new JTextField();
+		IP_end.setBounds(230, 5, 86, 24);
+		panel_IP.add(IP_end);
+		IP_end.setColumns(10);
+		
+		JPanel panel_port = new JPanel();
+		panel_port.setBounds(20, 60, 400, 40);
+		contentPane.add(panel_port);
+		panel_port.setLayout(null);
+		
+		JLabel portLabel = new JLabel("\u8F93\u5165\u7AEF\u53E3\u53F7");
+		portLabel.setBounds(5, 8, 75, 18);
+		panel_port.add(portLabel);
+		
+		port_start = new JTextField();
+		port_start.setBounds(85, 5, 86, 24);
+		panel_port.add(port_start);
+		port_start.setColumns(10);
+		
+		port_end = new JTextField();
+		port_end.setBounds(230, 5, 86, 24);
+		panel_port.add(port_end);
+		port_end.setColumns(10);
+		
+		JPanel panel_multi = new JPanel();
+		panel_multi.setBounds(20, 100, 180, 40);
+		contentPane.add(panel_multi);
+		panel_multi.setLayout(null);
+		
+		JLabel multiLabel = new JLabel("\u7EBF\u7A0B\u6570\u91CF");//多线程
+		multiLabel.setBounds(5, 8, 60, 18);
+		panel_multi.add(multiLabel);
+		
+		multi_number = new JTextField();
+		multi_number.setBounds(85, 5, 86, 24);
+		panel_multi.add(multi_number);
+		multi_number.setColumns(10);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(20, 140, 320, 300);
+		contentPane.add(textArea);
+		
+		JButton btnNewButton = new JButton("\u67E5\u627E");
+		btnNewButton.setBounds(250, 105, 90, 27);
+		contentPane.add(btnNewButton);
+		
+		
+		//触发事件
+		btnNewButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO 开始找
+				//TODO获取文本框的文本
+				String startIp = IP_start.getText();
+				String endIp = IP_end.getText();
+				int portS = Integer.parseInt(port_start.getText());
+				int portE = Integer.parseInt(port_end.getText());
+				int number = Integer.parseInt(multi_number.getText());
+				//textArea.append(ipS+"\n");//学会了换行
+				//textArea.append(ipE);
+				//String startIp = "23.6.181.43";
+				//String endIp = "23.6.181.153";
+				String []startIpList = startIp.split("\\."); 
+				String []endIpList = endIp.split("\\."); 
+				
+				System.out.println(Arrays.toString(startIpList));
+				//System.out.println(Arrays.toString(endIpList));
+				int[] startIpListInt = new int[4];
+				int[] endIpListInt = new int[4];
+				for(int i=0;i<4;i++) {
+					startIpListInt[i] = Integer.parseInt(startIpList[i]);
+					endIpListInt[i] = Integer.parseInt(endIpList[i]);
+				}
+				//判断要进行计次循环
+				int cycle = 0;
+				if(startIpListInt[0] < endIpListInt[0]) {
+					cycle = 4;
+				}else if(startIpListInt[1] < endIpListInt[1]){
+					cycle = 3;
+				}else if(startIpListInt[2] < endIpListInt[2]) {
+					cycle = 2;
+				}else {
+					cycle = 1;
+				}
+				//for(int i:endIpListInt) {
+					//System.out.println(i);
+				//}
+				//已经把IP解析成功
+				String countIp = "";
+				System.out.println(cycle);
+				int limit;
+				for(int i = 3;i >= (4-cycle);i--) {
+					if(i==(4-cycle)){
+						limit = endIpListInt[4-cycle];
+					}else {
+						limit = 255;
+					}
+					for(int j=startIpListInt[i];j <= limit;j++) {
+						//把IP串起来
+						if(i==3) 
+							countIp = String.valueOf(startIpListInt[0])+"." +String.valueOf(startIpListInt[1])+"." +String.valueOf(startIpListInt[2])+"." + String.valueOf(j);
+						if(i==2) 
+							countIp = String.valueOf(startIpListInt[0])+"." +String.valueOf(startIpListInt[1])+"." +String.valueOf(j)+"." + String.valueOf(startIpListInt[3]);
+						if(i==1) 
+							countIp = String.valueOf(startIpListInt[0])+"." +String.valueOf(j)+"." +String.valueOf(startIpListInt[2])+"." + String.valueOf(startIpListInt[3]);
+						if(i==0) 
+							countIp = String.valueOf(j)+"." +String.valueOf(startIpListInt[1])+"." +String.valueOf(startIpListInt[2])+"." + String.valueOf(startIpListInt[3]);		
+						//一个IP跟多个端口组合
+						int port =portS;
+						while(port <= portE) {
+							try {
+								//System.out.println("创建socket");
+								System.out.println(port);
+								//TODO
+								System.out.println(countIp+" "+port);
+								Socket socket = new Socket(countIp,port);
+								if(socket.isConnected()) {
+									System.out.println("连接上了:"+port);
+									String s = "连接上："+countIp+":"+String.valueOf(port)+"\n";
+									System.out.println(s);
+									textArea.append(s);
+								}
+							}catch(Exception e1){
+								//System.out.println("没有这个端口");
+							}
+							port = port+1;
+						}
+						
+					}
+					if(i!=4-cycle) {
+						startIpListInt[i-1] = startIpListInt[i-1]+1;
+						startIpListInt[i] = 255;
+					}
+				}
+				
+			}
+			
+		});
+		
+	}
+}
